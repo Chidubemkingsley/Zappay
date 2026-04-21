@@ -1,5 +1,8 @@
 # Zappay
 
+![IMAGE](../zappay1.png)
+
+
 P2P Naira (via bank transfer) <> STRK Marketplace for on/offramp with off-chain payments, verified by an Eigen TEE.
 
 ## TL;DR
