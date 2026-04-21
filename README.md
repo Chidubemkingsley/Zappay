@@ -75,10 +75,10 @@ Any Nigerian bank that processes transfers through Paystack:
 
 | Resource | URL |
 |----------|-----|
-| **Contract (Starkscan)** | [0x045f0dda5b49e8c994aceeb74f08dcbd47da88cd1ab2085221e76e3f78466c45](https://sepolia.starkscan.co/contract/0x045f0dda5b49e8c994aceeb74f08dcbd47da88cd1ab2085221e76e3f78466c45) |
-| **Deploy Transaction** | [0x034cb779c35ce0fd2b2fe315ecd793230179cf69e262d1752720eb303b1a09bd](https://sepolia.starkscan.co/tx/0x034cb779c35ce0fd2b2fe315ecd793230179cf69e262d1752720eb303b1a09bd) |
-| **Class Hash** | [0x6ff5c9ddc6a50950771f4b0c666ef2487b9452a1f9f41e4d0a23d56cfb2f5b3](https://sepolia.starkscan.co/class/0x06ff5c9ddc6a50950771f4b0c666ef2487b9452a1f9f41e4d0a23d56cfb2f5b3) |
-| **Declare Transaction** | [0x3355507bce26aa13bfc1e7286651c4b49933e543643743be9c0960fe0b79099](https://sepolia.starkscan.co/tx/0x03355507bce26aa13bfc1e7286651c4b49933e543643743be9c0960fe0b79099) |
+| **Contract (Voyager)** | [0x045f0dda5b49e8c994aceeb74f08dcbd47da88cd1ab2085221e76e3f78466c45](https://sepolia.voyager.online/contract/0x045f0dda5b49e8c994aceeb74f08dcbd47da88cd1ab2085221e76e3f78466c45) |
+| **Deploy Transaction** | [0x034cb779c35ce0fd2b2fe315ecd793230179cf69e262d1752720eb303b1a09bd](https://sepolia.voyager.online/tx/0x034cb779c35ce0fd2b2fe315ecd793230179cf69e262d1752720eb303b1a09bd) |
+| **Class Hash** | [0x6ff5c9ddc6a50950771f4b0c666ef2487b9452a1f9f41e4d0a23d56cfb2f5b3](https://sepolia.voyager.online/class/0x06ff5c9ddc6a50950771f4b0c666ef2487b9452a1f9f41e4d0a23d56cfb2f5b3) |
+| **Declare Transaction** | [0x3355507bce26aa13bfc1e7286651c4b49933e543643743be9c0960fe0b79099](https://sepolia.voyager.online/tx/0x03355507bce26aa13bfc1e7286651c4b49933e543643743be9c0960fe0b79099) |
 
 **Constructor args:**
 - `signer_public_key`: `0xd84917d613a8307d167e409503d85bef759f26bbf92cd87e1c994731a104c5`
