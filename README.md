@@ -1,4 +1,4 @@
-# TrustX
+# Zappay
 
 P2P Naira (via bank transfer) <> STRK Marketplace for on/offramp with off-chain payments, verified by an Eigen TEE.
 

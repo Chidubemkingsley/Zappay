@@ -1,10 +1,10 @@
-# STRK ↔ UPI Escrow Frontend
+# Zappay ↔ UPI Escrow Frontend
 
 React + Vite frontend for the STRK/UPI P2P escrow. Uses **StarkZap** for wallet connection and **Starknet.js** for contract calls.
 
 ## Features
 
-- **Deposit** – Sellers lock STRK with UPI ID and price per STRK (INR)
+- **Deposit** – Sellers lock STRK with UPI ID and price per STRK (NGN)
 - **Browse listings** – View active deposits from contract events
 - **Buy flow** – Signal intent → Pay UPI → Verify via TEE → Claim STRK
 - **Withdraw** – Sellers withdraw if no active intent or after intent expiry
