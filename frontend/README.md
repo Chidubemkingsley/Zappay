@@ -1,5 +1,9 @@
 # Zappay ↔ UPI Escrow Frontend
 
+
+
+![IMAGE](../zappay1.png)
+
 React + Vite frontend for the STRK/UPI P2P escrow. Uses **StarkZap** for wallet connection and **Starknet.js** for contract calls.
 
 ## Features
