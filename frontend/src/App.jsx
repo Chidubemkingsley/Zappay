@@ -3,20 +3,21 @@ import {
   StarkSDK,
   OnboardStrategy,
   Amount,
-  mainnetTokens,
+  sepoliaTokens,
 } from "starkzap";
 import { uint256, shortString, RpcProvider } from "starknet";
+import HelpBot from "./HelpBot";
 import "./App.css";
 
-const STRK = mainnetTokens.STRK;
+const STRK = sepoliaTokens.STRK;
 const ESCROW_ADDRESS =
   import.meta.env.VITE_ESCROW_ADDRESS ||
-  "0x0261fca9664d38fbe3c932c27db5d036a74d3a01aafe7f9317ab3f73e7522769";
+  "0x045f0dda5b49e8c994aceeb74f08dcbd47da88cd1ab2085221e76e3f78466c45";
 const TEE_SERVER =
   import.meta.env.VITE_TEE_SERVER || "http://localhost:3000";
 
-const MAINNET_RPC = "https://starknet-mainnet.g.alchemy.com/starknet/version/rpc/v0_10/7Hj4KzXldb0-HElc-YmVeVOPLeoSuREb";
-const START_BLOCK = 7782769;
+const SEPOLIA_RPC = "https://starknet-sepolia.public.blastapi.io/rpc/v0_7";
+const START_BLOCK = 0;
 
 const EV = {
   Deposit: BigInt("0x9149d2123147c5f43d258257fef0b7b969db78269369ebcf5ebb9eef8592f2"),
@@ -26,7 +27,7 @@ const EV = {
   IntentCancelled: BigInt("0x240b647cb9cbd3e4835973c6f458f28b8292db2031046eb20b287ef4f0ca587"),
 };
 
-const sdk = new StarkSDK({ network: "mainnet" });
+const sdk = new StarkSDK({ network: "sepolia" });
 
 const policies = [
   { target: STRK.address, method: "transfer" },
@@ -70,7 +71,7 @@ function formatCountdown(seconds) {
 }
 
 async function fetchContractEvents() {
-  const provider = new RpcProvider({ nodeUrl: MAINNET_RPC });
+  const provider = new RpcProvider({ nodeUrl: SEPOLIA_RPC });
   const latestBlock = await provider.getBlock("latest");
   const toBlock = latestBlock.block_number;
 
@@ -404,42 +405,20 @@ function App() {
     setClaimTxPending(false);
   }, []);
 
+  // Single-step: buyer pastes their Paystack/bank transfer reference
   const handleVerifyStep1 = useCallback(async (e) => {
     e.preventDefault();
-    if (!verifyUsername.trim() || !verifyPassword.trim()) return;
+    if (!verifyUsername.trim()) return; // reusing verifyUsername field for reference
     setVerifyLoading(true);
     setVerifyError(null);
     try {
-      const res = await fetch(`${TEE_SERVER}/api/login/step1`, {
+      const res = await fetch(`${TEE_SERVER}/api/verify`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username: verifyUsername, password: verifyPassword }),
+        body: JSON.stringify({ reference: verifyUsername.trim() }),
       });
       const data = await res.json();
-      if (!data.success) throw new Error(data.error || "Login failed");
-      setVerifySessionId(data.sessionId);
-      setVerifyStep(2);
-    } catch (err) {
-      setVerifyError(err?.message || "Login failed");
-    } finally {
-      setVerifyLoading(false);
-    }
-  }, [verifyUsername, verifyPassword]);
-
-  const handleVerifyStep2 = useCallback(async (e) => {
-    e.preventDefault();
-    if (!verifyOtp.trim() || !verifySessionId) return;
-    setVerifyLoading(true);
-    setVerifyError(null);
-    try {
-      const res = await fetch(`${TEE_SERVER}/api/login/step2`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: verifySessionId, otp: verifyOtp }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.error || "OTP verification failed");
-
+      if (!data.success) throw new Error(data.error || "Verification failed");
       const txn = data.transaction;
       const sig = data.signature;
       setVerifyResult({
@@ -456,7 +435,7 @@ function App() {
     } finally {
       setVerifyLoading(false);
     }
-  }, [verifyOtp, verifySessionId]);
+  }, [verifyUsername]);
 
   const handleClaimFunds = useCallback(async () => {
     if (!wallet || !verifyResult || !verifyModal) return;
@@ -603,7 +582,7 @@ function App() {
               ₦{strkPrice.toFixed(2)} / STRK
             </span>
           )}
-          <span className="network-pill">Mainnet</span>
+          <span className="network-pill">Sepolia</span>
         </div>
       </header>
 
@@ -612,7 +591,7 @@ function App() {
           <div className="hero-content">
             <h2>Buy and sell STRK with Naira</h2>
             <p>
-              Peer-to-peer marketplace with TEE-verified UPI payments and
+              Peer-to-peer marketplace with TEE-verified bank transfer payments and
               instant onchain settlement. No intermediaries.
             </p>
             <div className="hero-steps">
@@ -634,7 +613,7 @@ function App() {
                 <span className="step-num">3</span>
                 <div>
                   <strong>Pay &amp; Claim</strong>
-                  <span>Pay UPI, TEE verifies, STRK released</span>
+                  <span>Send ₦ via bank transfer, TEE verifies, STRK released</span>
                 </div>
               </div>
             </div>
@@ -688,7 +667,7 @@ function App() {
               {lastTxHash && (
                 <a
                   className="tx-pill"
-                  href={`https://voyager.online/tx/${lastTxHash}`}
+                  href={`https://sepolia.starkscan.co/tx/${lastTxHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -790,7 +769,7 @@ function App() {
                 <div>
                   <h2>Open Orders</h2>
                   <p className="panel-sub">
-                    Signal intent, pay seller via UPI, then claim STRK
+                    Signal intent, pay seller via bank transfer, then claim STRK
                   </p>
                 </div>
                 <button
@@ -919,7 +898,7 @@ function App() {
                             {lastTxHash && (
                               <a
                                 className="tx-pill"
-                                href={`https://voyager.online/tx/${lastTxHash}`}
+                                href={`https://sepolia.starkscan.co/tx/${lastTxHash}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
@@ -940,7 +919,7 @@ function App() {
                   {lastTxHash && (
                     <a
                       className="tx-pill"
-                      href={`https://voyager.online/tx/${lastTxHash}`}
+                      href={`https://sepolia.starkscan.co/tx/${lastTxHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -960,7 +939,7 @@ function App() {
                       <a
                         key={o.depositId}
                         className="order-card order-settled"
-                        href={`https://voyager.online/tx/${o.claimTxHash || o.txHash}`}
+                        href={`https://sepolia.starkscan.co/tx/${o.claimTxHash || o.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -999,18 +978,18 @@ function App() {
             <section className="panel">
               <h2>Create Sell Order</h2>
               <p className="panel-sub">
-                Lock STRK in escrow. Buyers signal intent, pay you via UPI,
+                Lock STRK in escrow. Buyers signal intent, pay you via bank transfer,
                 then claim with TEE-verified proof. You can withdraw anytime
                 if no buyer has an active intent.
               </p>
 
               <form className="sell-form" onSubmit={createSellOrder}>
                 <div className="field">
-                  <label htmlFor="sell-upi">Your UPI ID</label>
+                  <label htmlFor="sell-upi">Your Account Number</label>
                   <input
                     id="sell-upi"
                     type="text"
-                    placeholder="name@bank"
+                    placeholder="0123456789"
                     value={upiId}
                     onChange={(e) => setUpiId(e.target.value)}
                     disabled={loading}
@@ -1071,7 +1050,7 @@ function App() {
               {txForOrder === "sell" && lastTxHash && (
                 <a
                   className="tx-pill"
-                  href={`https://voyager.online/tx/${lastTxHash}`}
+                  href={`https://sepolia.starkscan.co/tx/${lastTxHash}`}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -1151,7 +1130,7 @@ function App() {
                             </span>
                           </div>
                           <div className="meta-row">
-                            <span className="meta-label">UPI</span>
+                            <span className="meta-label">Account No.</span>
                             <span className="meta-value meta-upi">{o.upiId}</span>
                           </div>
                           {hasActiveIntent && o.intent && (
@@ -1188,7 +1167,7 @@ function App() {
                             {lastTxHash && (
                               <a
                                 className="tx-pill"
-                                href={`https://voyager.online/tx/${lastTxHash}`}
+                                href={`https://sepolia.starkscan.co/tx/${lastTxHash}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                               >
@@ -1209,7 +1188,7 @@ function App() {
                   {lastTxHash && (
                     <a
                       className="tx-pill"
-                      href={`https://voyager.online/tx/${lastTxHash}`}
+                      href={`https://sepolia.starkscan.co/tx/${lastTxHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
                     >
@@ -1229,7 +1208,7 @@ function App() {
                       <a
                         key={o.depositId}
                         className="order-card order-settled"
-                        href={`https://voyager.online/tx/${o.claimTxHash || o.txHash}`}
+                        href={`https://sepolia.starkscan.co/tx/${o.claimTxHash || o.txHash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                       >
@@ -1269,10 +1248,10 @@ function App() {
               <div className="modal" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 440 }}>
                 <div className="modal-head">
                   <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <span className="logo">A</span>
+                    <span className="logo">₦</span>
                     <div>
-                      <h2 style={{ marginBottom: 0 }}>Amazon Pay via TEE</h2>
-                      <p className="modal-sub" style={{ margin: 0 }}>Verify offchain payment securely</p>
+                      <h2 style={{ marginBottom: 0 }}>Verify Bank Transfer</h2>
+                      <p className="modal-sub" style={{ margin: 0 }}>Paste your Paystack transaction reference</p>
                     </div>
                   </div>
                   <button className="modal-close" onClick={closeVerifyModal}>&times;</button>
@@ -1281,70 +1260,29 @@ function App() {
                 <div style={{ padding: "1.25rem" }}>
                   {verifyStep === 1 && (
                     <form className="sell-form" style={{ marginTop: 0 }} onSubmit={handleVerifyStep1}>
+                      <p className="modal-sub" style={{ marginTop: 0 }}>
+                        After sending Naira to the seller, paste the transaction reference from your bank app (Opay, PalmPay, Kuda, Moniepoint, GTBank, etc.)
+                      </p>
                       <div className="field">
-                        <label>Amazon Username</label>
+                        <label>Transaction Reference</label>
                         <input
                           type="text"
                           value={verifyUsername}
                           onChange={(e) => setVerifyUsername(e.target.value)}
                           required
                           disabled={verifyLoading}
-                          placeholder="Enter your Amazon username"
+                          placeholder="e.g. T2024112512345678"
                           autoFocus
-                        />
-                      </div>
-                      <div className="field">
-                        <label>Password</label>
-                        <input
-                          type="password"
-                          value={verifyPassword}
-                          onChange={(e) => setVerifyPassword(e.target.value)}
-                          required
-                          disabled={verifyLoading}
-                          placeholder="Enter your password"
                         />
                       </div>
                       {verifyError && <p className="error-msg">{verifyError}</p>}
                       <button type="submit" className="btn-submit" disabled={verifyLoading}>
-                        {verifyLoading ? "Signing in..." : "Continue"}
+                        {verifyLoading ? "Verifying..." : "Verify Payment"}
                       </button>
                     </form>
                   )}
 
-                  {verifyStep === 2 && (
-                    <form className="sell-form" style={{ marginTop: 0 }} onSubmit={handleVerifyStep2}>
-                      <p className="success-msg" style={{ marginTop: 0 }}>
-                        Enter the OTP sent to your registered contact.
-                      </p>
-                      <div className="field">
-                        <label>One-Time Password (OTP)</label>
-                        <input
-                          type="text"
-                          value={verifyOtp}
-                          onChange={(e) => setVerifyOtp(e.target.value)}
-                          required
-                          disabled={verifyLoading}
-                          placeholder="Enter OTP"
-                          autoFocus
-                        />
-                      </div>
-                      {verifyError && <p className="error-msg">{verifyError}</p>}
-                      <div style={{ display: "flex", gap: "0.5rem" }}>
-                        <button
-                          type="button"
-                          className="btn-cancel-intent"
-                          style={{ flex: 1, padding: "0.65rem" }}
-                          onClick={() => { setVerifyStep(1); setVerifyError(null); }}
-                          disabled={verifyLoading}
-                        >
-                          Back
-                        </button>
-                        <button type="submit" className="btn-submit" style={{ flex: 1 }} disabled={verifyLoading}>
-                          {verifyLoading ? "Verifying..." : "Verify OTP"}
-                        </button>
-                      </div>
-                    </form>
-                  )}
+                  {verifyStep === 2 && null /* unused step */}
 
                   {verifyStep === 3 && verifyResult && (
                     <div>
@@ -1362,11 +1300,11 @@ function App() {
                             <span className="meta-value">₦ {(verifyResult.payment_total_amount / 1e18).toFixed(2)}</span>
                           </div>
                           <div className="meta-row" style={{ marginBottom: "0.3rem" }}>
-                            <span className="meta-label">Receiver UPI</span>
+                            <span className="meta-label">Receiver Acct</span>
                             <span className="meta-value meta-upi">{feltToString(verifyResult.receiver_upi_id)}</span>
                           </div>
                           <div className="meta-row">
-                            <span className="meta-label">UPI Txn ID</span>
+                            <span className="meta-label">Txn ID</span>
                             <span className="meta-value meta-upi">{feltToString(verifyResult.upi_transaction_id)}</span>
                           </div>
                         </div>
@@ -1419,6 +1357,7 @@ function App() {
           )}
         </main>
       )}
+      <HelpBot />
     </div>
   );
 }
