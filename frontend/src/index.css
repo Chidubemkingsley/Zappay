@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@400;500&display=swap');
+
+/* ── Light mode (default) ────────────── */
+:root {
+  --bg: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-input: #FFF7F0;
+  --border: #FFD9B3;
+  --border-hover: #FFB366;
+  --text: #1C1917;
+  --text-secondary: #3D3833;
+  --text-muted: #78716C;
+  --accent: #F97316;
+  --accent-hover: #EA6C0A;
+  --accent-text: #FFFFFF;
+  --green: #3D6B3F;
+  --green-bg: #EDF4ED;
+  --green-border: #C0D6BF;
+  --red: #B8392E;
+  --red-bg: #FDF0EE;
+  --tag-settled: #78716C;
+  --tag-settled-bg: #EDE8E2;
+  --shadow: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.08), 0 1px 3px rgba(28, 25, 23, 0.05);
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: var(--text);
+  background-color: var(--bg);
+  color-scheme: light;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Dark mode ───────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #FFFFFF;
+    --bg-card: #FFFFFF;
+    --bg-input: #FFF7F0;
+    --border: #FFD9B3;
+    --border-hover: #FFB366;
+    --text: #1C1917;
+    --text-secondary: #3D3833;
+    --text-muted: #78716C;
+    --accent: #F97316;
+    --accent-hover: #EA6C0A;
+    --accent-text: #FFFFFF;
+    --green: #3D6B3F;
+    --green-bg: #EDF4ED;
+    --green-border: #C0D6BF;
+    --red: #B8392E;
+    --red-bg: #FDF0EE;
+    --tag-settled: #78716C;
+    --tag-settled-bg: #F5F5F5;
+    --shadow: 0 1px 3px rgba(28, 25, 23, 0.06), 0 1px 2px rgba(28, 25, 23, 0.04);
+    --shadow-md: 0 4px 12px rgba(28, 25, 23, 0.08), 0 1px 3px rgba(28, 25, 23, 0.05);
+  }
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--text);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+code {
+  font-family: 'DM Mono', ui-monospace, monospace;
+}
+
+input, textarea {
+  font-family: inherit;
+}
